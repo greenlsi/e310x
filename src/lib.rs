@@ -173,31 +173,7 @@ impl core::fmt::Debug for CLINT {
 #[doc = "Coreplex Local Interrupts"]
 pub mod clint;
 #[doc = "Platform Level Interrupt Control"]
-pub struct PLIC {
-    _marker: PhantomData<*const ()>,
-}
-unsafe impl Send for PLIC {}
-impl PLIC {
-    #[doc = r"Pointer to the register block"]
-    pub const PTR: *const plic::RegisterBlock = 0x0c00_0000 as *const _;
-    #[doc = r"Return the pointer to the register block"]
-    #[inline(always)]
-    pub const fn ptr() -> *const plic::RegisterBlock {
-        Self::PTR
-    }
-}
-impl Deref for PLIC {
-    type Target = plic::RegisterBlock;
-    #[inline(always)]
-    fn deref(&self) -> &Self::Target {
-        unsafe { &*Self::PTR }
-    }
-}
-impl core::fmt::Debug for PLIC {
-    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        f.debug_struct("PLIC").finish()
-    }
-}
+pub use plic::PLIC;
 #[doc = "Platform Level Interrupt Control"]
 pub mod plic;
 #[doc = "Watchdog"]
@@ -744,9 +720,7 @@ impl Peripherals {
             CLINT: CLINT {
                 _marker: PhantomData,
             },
-            PLIC: PLIC {
-                _marker: PhantomData,
-            },
+            PLIC: PLIC::new(),
             WDOG: WDOG {
                 _marker: PhantomData,
             },
