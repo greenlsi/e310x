@@ -173,9 +173,9 @@ impl core::fmt::Debug for CLINT {
 #[doc = "Coreplex Local Interrupts"]
 pub mod clint;
 #[doc = "Platform Level Interrupt Control"]
-pub use plic::PLIC;
-#[doc = "Platform Level Interrupt Control"]
 pub mod plic;
+#[doc = "Platform Level Interrupt Control"]
+pub use plic::{PLIC, Priority};
 #[doc = "Watchdog"]
 pub struct WDOG {
     _marker: PhantomData<*const ()>,
