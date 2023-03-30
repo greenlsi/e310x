@@ -16,7 +16,8 @@ vcell = "0.1.3"
 
 [features]
 rt = []
+v-extern = ["rt"]
 g002 = []
 
 [package.metadata.docs.rs]
-features = ["rt", "g002", "critical-section"]
+features = ["rt", "v-extern", "g002", "critical-section"]

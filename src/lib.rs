@@ -141,6 +141,22 @@ pub static __EXTERNAL_INTERRUPTS: [Vector; 53] = [
     Vector { _handler: PWM2CMP3 },
     Vector { _handler: I2C0 },
 ];
+
+/// Handler for vectored machine external interrupts (see the [`riscv-rt`] crate).
+///
+/// # Note
+///
+/// You need to activate the `v-extern` feature.
+#[cfg(feature = "v-extern")]
+#[no_mangle]
+#[allow(non_snake_case)]
+unsafe fn MachineExternal() {
+    if let Some(interrupt) = PLIC::claim() {
+        unsafe { (__EXTERNAL_INTERRUPTS[interrupt as usize - 1]._handler)() };
+        PLIC::complete(interrupt);
+    }
+}
+
 #[doc(hidden)]
 pub mod interrupt;
 pub use self::interrupt::Interrupt;
@@ -175,7 +191,7 @@ pub mod clint;
 #[doc = "Platform Level Interrupt Control"]
 pub mod plic;
 #[doc = "Platform Level Interrupt Control"]
-pub use plic::{PLIC, Priority};
+pub use plic::{Priority, PLIC};
 #[doc = "Watchdog"]
 pub struct WDOG {
     _marker: PhantomData<*const ()>,
