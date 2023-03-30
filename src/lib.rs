@@ -152,7 +152,7 @@ pub static __EXTERNAL_INTERRUPTS: [Vector; 53] = [
 #[allow(non_snake_case)]
 unsafe fn MachineExternal() {
     if let Some(interrupt) = PLIC::claim() {
-        unsafe { (__EXTERNAL_INTERRUPTS[interrupt as usize - 1]._handler)() };
+        unsafe { (__EXTERNAL_INTERRUPTS[interrupt as usize]._handler)() };
         PLIC::complete(interrupt);
     }
 }
