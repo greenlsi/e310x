@@ -1,7 +1,5 @@
 pub use crate::Interrupt;
 
-riscv::plic_context!(PLIC, 0x0c00_0000, 0, Interrupt, Priority);
-
 #[doc = "\n\nValue on reset: 0"]
 #[derive(Clone, Copy, Debug, PartialEq)]
 #[repr(u8)]
@@ -32,21 +30,24 @@ impl Priority {
     /// Converts a number to the corresponding priority level.
     #[inline]
     pub fn try_from(value: u8) -> Result<Self, TryFromPriorityError> {
-        match value {
-            0 => Ok(Self::P0),
-            1 => Ok(Self::P1),
-            2 => Ok(Self::P2),
-            3 => Ok(Self::P3),
-            4 => Ok(Self::P4),
-            5 => Ok(Self::P5),
-            6 => Ok(Self::P6),
-            7 => Ok(Self::P7),
-            _ => Err(TryFromPriorityError(())),
+        if value > 7 {
+            Err(TryFromPriorityError(()))
+        } else {
+            // SAFETY: the value is in the range 0..=7
+            Ok(unsafe { core::mem::transmute(value) })
         }
     }
 }
 
-unsafe impl riscv::peripheral::plic::InterruptNumber for Interrupt {
+/// PLIC context of the target
+#[derive(Clone, Copy, Debug, PartialEq)]
+#[repr(u16)]
+pub enum Context {
+    #[doc = "0: Context 0"]
+    C0 = 0,
+}
+
+unsafe impl riscv_peripheral::plic::InterruptNumber for Interrupt {
     #[cfg(not(feature = "g002"))]
     const MAX_INTERRUPT_NUMBER: u16 = Self::PWM2CMP3 as _;
     #[cfg(feature = "g002")]
@@ -56,25 +57,40 @@ unsafe impl riscv::peripheral::plic::InterruptNumber for Interrupt {
         self as _
     }
 
-    fn try_from(value: u16) -> Result<Self, u16> {
-        match Self::try_from(value as _) {
+    fn from_number(number: u16) -> Result<Self, u16> {
+        match Self::try_from(number) {
             Ok(interrupt) => Ok(interrupt),
-            _ => Err(value),
+            _ => Err(number),
         }
     }
 }
 
-unsafe impl riscv::peripheral::plic::PriorityNumber for Priority {
+unsafe impl riscv_peripheral::plic::PriorityNumber for Priority {
     const MAX_PRIORITY_NUMBER: u8 = Self::P7 as _;
 
     fn number(self) -> u8 {
         self as _
     }
 
-    fn try_from(value: u8) -> Result<Self, u8> {
-        match Self::try_from(value as _) {
+    fn from_number(number: u8) -> Result<Self, u8> {
+        match Self::try_from(number) {
             Ok(priority) => Ok(priority),
-            _ => Err(value),
+            _ => Err(number),
+        }
+    }
+}
+
+unsafe impl riscv_peripheral::plic::ContextNumber for Context {
+    const MAX_CONTEXT_NUMBER: u16 = Self::C0 as _;
+
+    fn number(self) -> u16 {
+        self as _
+    }
+
+    fn from_number(number: u16) -> Result<Self, u16> {
+        match number {
+            0 => Ok(Self::C0),
+            _ => Err(number),
         }
     }
 }

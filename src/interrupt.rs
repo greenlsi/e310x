@@ -113,61 +113,12 @@ pub struct TryFromInterruptError(());
 impl Interrupt {
     #[doc = r" Attempt to convert a given value into an `Interrupt`"]
     #[inline]
-    pub fn try_from(value: u8) -> Result<Self, TryFromInterruptError> {
-        match value {
-            1 => Ok(Interrupt::WATCHDOG),
-            2 => Ok(Interrupt::RTC),
-            3 => Ok(Interrupt::UART0),
-            4 => Ok(Interrupt::UART1),
-            5 => Ok(Interrupt::QSPI0),
-            6 => Ok(Interrupt::QSPI1),
-            7 => Ok(Interrupt::QSPI2),
-            8 => Ok(Interrupt::GPIO0),
-            9 => Ok(Interrupt::GPIO1),
-            10 => Ok(Interrupt::GPIO2),
-            11 => Ok(Interrupt::GPIO3),
-            12 => Ok(Interrupt::GPIO4),
-            13 => Ok(Interrupt::GPIO5),
-            14 => Ok(Interrupt::GPIO6),
-            15 => Ok(Interrupt::GPIO7),
-            16 => Ok(Interrupt::GPIO8),
-            17 => Ok(Interrupt::GPIO9),
-            18 => Ok(Interrupt::GPIO10),
-            19 => Ok(Interrupt::GPIO11),
-            20 => Ok(Interrupt::GPIO12),
-            21 => Ok(Interrupt::GPIO13),
-            22 => Ok(Interrupt::GPIO14),
-            23 => Ok(Interrupt::GPIO15),
-            24 => Ok(Interrupt::GPIO16),
-            25 => Ok(Interrupt::GPIO17),
-            26 => Ok(Interrupt::GPIO18),
-            27 => Ok(Interrupt::GPIO19),
-            28 => Ok(Interrupt::GPIO20),
-            29 => Ok(Interrupt::GPIO21),
-            30 => Ok(Interrupt::GPIO22),
-            31 => Ok(Interrupt::GPIO23),
-            32 => Ok(Interrupt::GPIO24),
-            33 => Ok(Interrupt::GPIO25),
-            34 => Ok(Interrupt::GPIO26),
-            35 => Ok(Interrupt::GPIO27),
-            36 => Ok(Interrupt::GPIO28),
-            37 => Ok(Interrupt::GPIO29),
-            38 => Ok(Interrupt::GPIO30),
-            39 => Ok(Interrupt::GPIO31),
-            40 => Ok(Interrupt::PWM0CMP0),
-            41 => Ok(Interrupt::PWM0CMP1),
-            42 => Ok(Interrupt::PWM0CMP2),
-            43 => Ok(Interrupt::PWM0CMP3),
-            44 => Ok(Interrupt::PWM1CMP0),
-            45 => Ok(Interrupt::PWM1CMP1),
-            46 => Ok(Interrupt::PWM1CMP2),
-            47 => Ok(Interrupt::PWM1CMP3),
-            48 => Ok(Interrupt::PWM2CMP0),
-            49 => Ok(Interrupt::PWM2CMP1),
-            50 => Ok(Interrupt::PWM2CMP2),
-            51 => Ok(Interrupt::PWM2CMP3),
-            52 => Ok(Interrupt::I2C0),
-            _ => Err(TryFromInterruptError(())),
+    pub fn try_from(value: u16) -> Result<Self, TryFromInterruptError> {
+        if value == 0 || value > 52 {
+            Err(TryFromInterruptError(()))
+        } else {
+            // SAFETY: the value is in the range 1..=52
+            Ok(unsafe { core::mem::transmute(value) })
         }
     }
 }

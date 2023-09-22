@@ -151,9 +151,10 @@ pub static __EXTERNAL_INTERRUPTS: [Vector; 53] = [
 #[no_mangle]
 #[allow(non_snake_case)]
 unsafe fn MachineExternal() {
-    if let Some(interrupt) = PLIC::claim() {
-        unsafe { (__EXTERNAL_INTERRUPTS[interrupt as usize]._handler)() };
-        PLIC::complete(interrupt);
+    let claim = PLIC::ctx0().claim();
+    while let Some(source) = claim.claim::<Interrupt>() {
+        unsafe { (__EXTERNAL_INTERRUPTS[source as usize]._handler)() };
+        claim.complete(source)
     }
 }
 
@@ -161,37 +162,15 @@ unsafe fn MachineExternal() {
 pub mod interrupt;
 pub use self::interrupt::Interrupt;
 #[doc = "Coreplex Local Interrupts"]
-pub struct CLINT {
-    _marker: PhantomData<*const ()>,
-}
-unsafe impl Send for CLINT {}
-impl CLINT {
-    #[doc = r"Pointer to the register block"]
-    pub const PTR: *const clint::RegisterBlock = 0x0200_0000 as *const _;
-    #[doc = r"Return the pointer to the register block"]
-    #[inline(always)]
-    pub const fn ptr() -> *const clint::RegisterBlock {
-        Self::PTR
-    }
-}
-impl Deref for CLINT {
-    type Target = clint::RegisterBlock;
-    #[inline(always)]
-    fn deref(&self) -> &Self::Target {
-        unsafe { &*Self::PTR }
-    }
-}
-impl core::fmt::Debug for CLINT {
-    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        f.debug_struct("CLINT").finish()
-    }
-}
-#[doc = "Coreplex Local Interrupts"]
 pub mod clint;
+riscv_peripheral::clint_codegen!(base 0x0200_0000, mtimecmps [mtimecmp0 = (clint::HartId::HART0, "0")],);
+
 #[doc = "Platform Level Interrupt Control"]
 pub mod plic;
+riscv_peripheral::plic_codegen!(base 0x0c00_0000, ctxs [ctx0 = (plic::Context::C0, "0")],);
+
 #[doc = "Platform Level Interrupt Control"]
-pub use plic::{Priority, PLIC};
+pub use plic::{Context, Priority};
 #[doc = "Watchdog"]
 pub struct WDOG {
     _marker: PhantomData<*const ()>,
@@ -673,10 +652,6 @@ static mut DEVICE_PERIPHERALS: bool = false;
 #[doc = r" All the peripherals."]
 #[allow(non_snake_case)]
 pub struct Peripherals {
-    #[doc = "CLINT"]
-    pub CLINT: CLINT,
-    #[doc = "PLIC"]
-    pub PLIC: PLIC,
     #[doc = "WDOG"]
     pub WDOG: WDOG,
     #[doc = "RTC"]
@@ -733,10 +708,6 @@ impl Peripherals {
     pub unsafe fn steal() -> Self {
         DEVICE_PERIPHERALS = true;
         Peripherals {
-            CLINT: CLINT {
-                _marker: PhantomData,
-            },
-            PLIC: PLIC::new(),
             WDOG: WDOG {
                 _marker: PhantomData,
             },
