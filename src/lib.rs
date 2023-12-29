@@ -157,24 +157,26 @@ unsafe fn MachineExternal() {
     }
 }
 
+pub mod pac;
+pub use pac::*;
+
 #[doc(hidden)]
 pub mod interrupt;
 pub use self::interrupt::Interrupt;
-#[doc = "Coreplex Local Interrupts"]
-pub mod clint;
+
 riscv_peripheral::clint_codegen!(
     base 0x0200_0000,
     freq 32_768,
-    mtimecmps [mtimecmp0=(clint::HartId::HART0,"`H0`")],
-    msips [msip0=(clint::HartId::HART0,"`H0`")],
+    mtimecmps [mtimecmp0=(HartId::HART0,"`H0`")],
+    msips [msip0=(HartId::HART0,"`H0`")],
 );
 
 #[doc = "Platform Level Interrupt Control"]
 pub mod plic;
-riscv_peripheral::plic_codegen!(base 0x0c00_0000, ctxs [ctx0 = (plic::Context::C0, "0")],);
+riscv_peripheral::plic_codegen!(base 0x0c00_0000, ctxs [ctx0 = (HartId::HART0, "0")],);
 
 #[doc = "Platform Level Interrupt Control"]
-pub use plic::{Context, Priority};
+pub use plic::Priority;
 #[doc = "Watchdog"]
 pub struct WDOG {
     _marker: PhantomData<*const ()>,
