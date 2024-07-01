@@ -3,6 +3,7 @@ MEMORY
     RAM : ORIGIN = 0x80000000, LENGTH = 16K
 }
 
+/* External interrupt sources */
 PROVIDE(WATCHDOG = DefaultHandler);
 PROVIDE(RTC = DefaultHandler);
 PROVIDE(UART0 = DefaultHandler);
@@ -55,4 +56,11 @@ PROVIDE(PWM2CMP1 = DefaultHandler);
 PROVIDE(PWM2CMP2 = DefaultHandler);
 PROVIDE(PWM2CMP3 = DefaultHandler);
 PROVIDE(I2C0 = DefaultHandler);
+/* Core interrupt sources and trap handlers */
+PROVIDE(MachineSoft = DefaultHandler);
+PROVIDE(_start_MachineSoft_trap = _start_DefaultHandler_trap);
+PROVIDE(MachineTimer = DefaultHandler);
+PROVIDE(_start_MachineTimer_trap = _start_DefaultHandler_trap);
+PROVIDE(MachineExternal = DefaultHandler);
+PROVIDE(_start_MachineExternal_trap = _start_DefaultHandler_trap);
 

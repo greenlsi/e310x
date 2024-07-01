@@ -12,10 +12,15 @@ rust-version = "1.61"
 
 [dependencies]
 critical-section = { version = "1.1.1", optional = true }
+riscv = { path = "../riscv/riscv" } # TODO use crates.io
+riscv-pac = { path = "../riscv/riscv-pac" } # TODO use crates.io
+riscv-peripheral = { path = "../riscv/riscv-peripheral" } # TODO use crates.io
+riscv-rt = { path = "../riscv/riscv-rt", features = ["single-hart"], optional = true } # TODO use crates.io
 vcell = "0.1.3"
 
 [features]
-rt = []
+rt = ["riscv-rt"]
+v-trap = ["rt", "riscv-rt/v-trap"]
 g002 = []
 
 [package.metadata.docs.rs]
