@@ -12,8 +12,6 @@
   <resetMask>0xFFFFFFFF</resetMask>
 
   <riscv>
-    <clint>CLINT</clint>  
-    <plic>PLIC</plic>
     <coreInterrupts>
         <interrupt>
             <name>MachineSoft</name>

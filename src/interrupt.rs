@@ -1,8 +1,7 @@
-use riscv_pac::pac_enum;
 pub use riscv_pac::ExternalInterruptNumber;
 #[doc = r" External interrupts. These interrupts are handled by the external peripherals."]
 #[repr(usize)]
-# [pac_enum (unsafe ExternalInterruptNumber)]
+# [riscv_pac :: pac_enum (unsafe ExternalInterruptNumber)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ExternalInterrupt {
     #[doc = "1 - WATCHDOG"]
@@ -113,7 +112,7 @@ pub enum ExternalInterrupt {
 pub use riscv_pac::CoreInterruptNumber;
 #[doc = r" Core interrupts. These interrupts are handled by the core itself."]
 #[repr(usize)]
-# [pac_enum (unsafe CoreInterruptNumber)]
+# [riscv_pac :: pac_enum (unsafe CoreInterruptNumber)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CoreInterrupt {
     #[doc = "3 - Machine Software Interrupt"]
@@ -126,7 +125,7 @@ pub enum CoreInterrupt {
 pub use riscv_pac::PriorityNumber;
 #[doc = r" Priority levels in the device"]
 #[repr(u8)]
-# [pac_enum (unsafe PriorityNumber)]
+# [riscv_pac :: pac_enum (unsafe PriorityNumber)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Priority {
     #[doc = "0 - Priority level 0"]
@@ -149,7 +148,7 @@ pub enum Priority {
 pub use riscv_pac::HartIdNumber;
 #[doc = r" HARTs in the device"]
 #[repr(u16)]
-# [pac_enum (unsafe HartIdNumber)]
+# [riscv_pac :: pac_enum (unsafe HartIdNumber)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Hart {
     #[doc = "0 - Hart 0"]
