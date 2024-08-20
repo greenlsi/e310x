@@ -1,7 +1,17 @@
-pub use riscv_pac::ExternalInterruptNumber;
+#[doc = r" Core interrupts. These interrupts are handled by the core itself."]
+# [riscv :: pac_enum (unsafe CoreInterruptNumber)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CoreInterrupt {
+    #[doc = "3 - Machine Software Interrupt"]
+    MachineSoft = 3,
+    #[doc = "7 - Machine Timer Interrupt"]
+    MachineTimer = 7,
+    #[doc = "11 - Machine External Interrupt"]
+    MachineExternal = 11,
+}
+pub use riscv::interrupt::Exception;
 #[doc = r" External interrupts. These interrupts are handled by the external peripherals."]
-#[repr(usize)]
-# [riscv_pac :: pac_enum (unsafe ExternalInterruptNumber)]
+# [riscv :: pac_enum (unsafe ExternalInterruptNumber)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ExternalInterrupt {
     #[doc = "1 - WATCHDOG"]
@@ -109,23 +119,8 @@ pub enum ExternalInterrupt {
     #[doc = "52 - I2C0"]
     I2C0 = 52,
 }
-pub use riscv_pac::CoreInterruptNumber;
-#[doc = r" Core interrupts. These interrupts are handled by the core itself."]
-#[repr(usize)]
-# [riscv_pac :: pac_enum (unsafe CoreInterruptNumber)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum CoreInterrupt {
-    #[doc = "3 - Machine Software Interrupt"]
-    MachineSoft = 3,
-    #[doc = "7 - Machine Timer Interrupt"]
-    MachineTimer = 7,
-    #[doc = "11 - Machine External Interrupt"]
-    MachineExternal = 11,
-}
-pub use riscv_pac::PriorityNumber;
 #[doc = r" Priority levels in the device"]
-#[repr(u8)]
-# [riscv_pac :: pac_enum (unsafe PriorityNumber)]
+# [riscv :: pac_enum (unsafe PriorityNumber)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Priority {
     #[doc = "0 - Priority level 0"]
@@ -145,12 +140,29 @@ pub enum Priority {
     #[doc = "7 - Priority level 7"]
     P7 = 7,
 }
-pub use riscv_pac::HartIdNumber;
 #[doc = r" HARTs in the device"]
-#[repr(u16)]
-# [riscv_pac :: pac_enum (unsafe HartIdNumber)]
+# [riscv :: pac_enum (unsafe HartIdNumber)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Hart {
     #[doc = "0 - Hart 0"]
     H0 = 0,
+}
+pub use riscv::{
+    interrupt::{disable, enable, free, nested},
+    CoreInterruptNumber, ExceptionNumber, HartIdNumber, PriorityNumber,
+};
+pub type Trap = riscv::interrupt::Trap<CoreInterrupt, Exception>;
+#[doc = r" Retrieves the cause of a trap in the current hart."]
+#[doc = r""]
+#[doc = r" If the raw cause is not a valid interrupt or exception for the target, it returns an error."]
+#[inline]
+pub fn try_cause() -> riscv::result::Result<Trap> {
+    riscv::interrupt::try_cause()
+}
+#[doc = r" Retrieves the cause of a trap in the current hart (machine mode)."]
+#[doc = r""]
+#[doc = r" If the raw cause is not a valid interrupt or exception for the target, it panics."]
+#[inline]
+pub fn cause() -> Trap {
+    try_cause().unwrap()
 }
