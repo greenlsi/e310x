@@ -10,6 +10,53 @@ pub enum CoreInterrupt {
     MachineExternal = 11,
 }
 pub use riscv::interrupt::Exception;
+#[doc = r" Priority levels in the device"]
+# [riscv :: pac_enum (unsafe PriorityNumber)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Priority {
+    #[doc = "0 - Priority level 0"]
+    P0 = 0,
+    #[doc = "1 - Priority level 1"]
+    P1 = 1,
+    #[doc = "2 - Priority level 2"]
+    P2 = 2,
+    #[doc = "3 - Priority level 3"]
+    P3 = 3,
+    #[doc = "4 - Priority level 4"]
+    P4 = 4,
+    #[doc = "5 - Priority level 5"]
+    P5 = 5,
+    #[doc = "6 - Priority level 6"]
+    P6 = 6,
+    #[doc = "7 - Priority level 7"]
+    P7 = 7,
+}
+#[doc = r" HARTs in the device"]
+# [riscv :: pac_enum (unsafe HartIdNumber)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Hart {
+    #[doc = "0 - Hart 0"]
+    H0 = 0,
+}
+pub use riscv::{
+    interrupt::{disable, enable, free, nested},
+    CoreInterruptNumber, ExceptionNumber, HartIdNumber, PriorityNumber,
+};
+pub type Trap = riscv::interrupt::Trap<CoreInterrupt, Exception>;
+#[doc = r" Retrieves the cause of a trap in the current hart."]
+#[doc = r""]
+#[doc = r" If the raw cause is not a valid interrupt or exception for the target, it returns an error."]
+#[inline]
+pub fn try_cause() -> riscv::result::Result<Trap> {
+    riscv::interrupt::try_cause()
+}
+#[doc = r" Retrieves the cause of a trap in the current hart (machine mode)."]
+#[doc = r""]
+#[doc = r" If the raw cause is not a valid interrupt or exception for the target, it panics."]
+#[inline]
+pub fn cause() -> Trap {
+    try_cause().unwrap()
+}
 #[doc = r" External interrupts. These interrupts are handled by the external peripherals."]
 # [riscv :: pac_enum (unsafe ExternalInterruptNumber)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -118,51 +165,4 @@ pub enum ExternalInterrupt {
     PWM2CMP3 = 51,
     #[doc = "52 - I2C0"]
     I2C0 = 52,
-}
-#[doc = r" Priority levels in the device"]
-# [riscv :: pac_enum (unsafe PriorityNumber)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Priority {
-    #[doc = "0 - Priority level 0"]
-    P0 = 0,
-    #[doc = "1 - Priority level 1"]
-    P1 = 1,
-    #[doc = "2 - Priority level 2"]
-    P2 = 2,
-    #[doc = "3 - Priority level 3"]
-    P3 = 3,
-    #[doc = "4 - Priority level 4"]
-    P4 = 4,
-    #[doc = "5 - Priority level 5"]
-    P5 = 5,
-    #[doc = "6 - Priority level 6"]
-    P6 = 6,
-    #[doc = "7 - Priority level 7"]
-    P7 = 7,
-}
-#[doc = r" HARTs in the device"]
-# [riscv :: pac_enum (unsafe HartIdNumber)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Hart {
-    #[doc = "0 - Hart 0"]
-    H0 = 0,
-}
-pub use riscv::{
-    interrupt::{disable, enable, free, nested},
-    CoreInterruptNumber, ExceptionNumber, HartIdNumber, PriorityNumber,
-};
-pub type Trap = riscv::interrupt::Trap<CoreInterrupt, Exception>;
-#[doc = r" Retrieves the cause of a trap in the current hart."]
-#[doc = r""]
-#[doc = r" If the raw cause is not a valid interrupt or exception for the target, it returns an error."]
-#[inline]
-pub fn try_cause() -> riscv::result::Result<Trap> {
-    riscv::interrupt::try_cause()
-}
-#[doc = r" Retrieves the cause of a trap in the current hart (machine mode)."]
-#[doc = r""]
-#[doc = r" If the raw cause is not a valid interrupt or exception for the target, it panics."]
-#[inline]
-pub fn cause() -> Trap {
-    try_cause().unwrap()
 }
