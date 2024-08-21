@@ -1,0 +1,2 @@
+use_riscv_peripheral = true
+riscv_clint_freq = 32768
