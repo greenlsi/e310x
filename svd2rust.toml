@@ -17,5 +17,5 @@ priorities = [
 harts = [
     { name = "H0", value = 0, description = "Hart 0" },
 ]
-clint = {name = "CLINT", freq = 32768, async_delay = false }
-plic = "PLIC"
+clint = { name = "CLINT", freq = 32768, async_delay = false }
+plic = { name = "PLIC", core_interrupt = "MachineExternal", hart_id = "H0" }

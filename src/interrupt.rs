@@ -166,3 +166,12 @@ pub enum ExternalInterrupt {
     #[doc = "52 - I2C0"]
     I2C0 = 52,
 }
+#[cfg(feature = "rt")]
+#[riscv_rt::core_interrupt(CoreInterrupt::MachineExternal)]
+fn plic_handler() {
+    let claim = crate::PLIC::ctx(Hart::H0).claim();
+    if let Some(s) = claim.claim::<CoreInterrupt>() {
+        unsafe { _dispatch_core_interrupt(s.number()) }
+        claim.complete(s);
+    }
+}
