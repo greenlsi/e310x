@@ -6,7 +6,7 @@ set -e
 rm -rf src
 mkdir src
 # svd2rust --target riscv -g -i e310x.svd
-../svd2rust/target/release/svd2rust --target riscv -c svd2rust.toml -g -i e310x.svd
+../svd2rust/target/release/svd2rust --target riscv -r riscv_config.yaml -g -i e310x.svd
 mv generic.rs src/
 form -i lib.rs -o src/
 rm lib.rs

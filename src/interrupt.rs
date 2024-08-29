@@ -40,7 +40,7 @@ pub enum Hart {
 }
 pub use riscv::{
     interrupt::{disable, enable, free, nested},
-    CoreInterruptNumber, ExceptionNumber, HartIdNumber, PriorityNumber,
+    ExceptionNumber, HartIdNumber, InterruptNumber, PriorityNumber,
 };
 pub type Trap = riscv::interrupt::Trap<CoreInterrupt, Exception>;
 #[doc = r" Retrieves the cause of a trap in the current hart."]
@@ -170,7 +170,7 @@ pub enum ExternalInterrupt {
 #[riscv_rt::core_interrupt(CoreInterrupt::MachineExternal)]
 fn plic_handler() {
     let claim = crate::PLIC::ctx(Hart::H0).claim();
-    if let Some(s) = claim.claim::<CoreInterrupt>() {
+    if let Some(s) = claim.claim::<ExternalInterrupt>() {
         unsafe { _dispatch_core_interrupt(s.number()) }
         claim.complete(s);
     }
