@@ -171,7 +171,7 @@ pub enum ExternalInterrupt {
 fn plic_handler() {
     let claim = crate::PLIC::ctx(Hart::H0).claim();
     if let Some(s) = claim.claim::<ExternalInterrupt>() {
-        unsafe { _dispatch_core_interrupt(s.number()) }
+        unsafe { _dispatch_external_interrupt(s.number()) }
         claim.complete(s);
     }
 }
